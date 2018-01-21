@@ -73,7 +73,7 @@ class TodoContainer extends Component {
             <div>
                 {this.state.todos.map((todo) => {
                     if (todo.created) {
-                        return (<TodoForm todo={todo} key={todo.id}/>)
+                        return (<TodoForm todo={todo} key={todo.id} apiJsonArrayHandler={this.apiJsonArrayHandler} />)
                     } else {
                         return (<Todo todo={todo} key={todo.id}/>)
                     }
