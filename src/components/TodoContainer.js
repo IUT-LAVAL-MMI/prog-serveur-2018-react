@@ -4,6 +4,7 @@ import update from 'immutability-helper'
 
 // Components
 import Todo from './Todo'
+import TodoForm from './TodoForm'
 
 class TodoContainer extends Component {
     // Reacts
@@ -14,22 +15,23 @@ class TodoContainer extends Component {
             todos: []
         }
     };
-
     componentDidMount() {
         axios.get('http://localhost:4000/v1/to_do.json')
             .then(response => {
                 console.log(response);
                 // Update the local state with the received data after the GET action
-                this.handleUpdate(response.data);
+                this.apiJsonArrayHandler(response.data);
             })
             .catch(error => console.log(error))
     };
 
     // Custom handlers
-    handleUpdate = (webdata) => {
+    apiJsonArrayHandler = (webdata, created = false) => {
         console.log(webdata);
         webdata.forEach( web_item_data => {
             const updated_todos = function(local_state, item_data) {
+                // set the created flag
+                item_data.created = created;
                 // find the element index
                 const response_index = local_state.findIndex(todo => todo.id === item_data.id);
                 if (response_index === -1) {
@@ -45,7 +47,7 @@ class TodoContainer extends Component {
             this.setState({todos: updated_todos});
         });
     }
-    // Post a new todo item and update the component state
+    // Post a new item and update the component state
     addToDo = () => {
         axios.post(
             'http://localhost:4000/v1/to_do',
@@ -58,8 +60,8 @@ class TodoContainer extends Component {
                     }
             }
         ).then(response => {
-            // Update the local state with the received data after the POST action
-            this.handleUpdate([response.data]);
+            // Update the local state with the received data after the POST action (and set them as just created)
+            this.apiJsonArrayHandler([response.data], true);
         }).catch(error =>
             console.log(error)
         );
@@ -70,7 +72,11 @@ class TodoContainer extends Component {
         return (
             <div>
                 {this.state.todos.map((todo) => {
-                    return (<Todo todo={todo} key={todo.id}/>)
+                    if (todo.created) {
+                        return (<TodoForm todo={todo} key={todo.id}/>)
+                    } else {
+                        return (<Todo todo={todo} key={todo.id}/>)
+                    }
                 })}
                 <button className="new" onClick={this.addToDo}>A new todo</button>
             </div>
