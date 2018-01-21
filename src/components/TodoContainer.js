@@ -3,7 +3,7 @@ import axios from 'axios'
 import update from 'immutability-helper'
 
 // Components
-import Todo from './Todo'
+import TodoItem from './TodoItem'
 import TodoForm from './TodoForm'
 
 class TodoContainer extends Component {
@@ -26,12 +26,12 @@ class TodoContainer extends Component {
     };
 
     // Custom handlers
-    apiJsonArrayHandler = (webdata, created = false) => {
+    apiJsonArrayHandler = (webdata, forUpdate = false) => {
         console.log(webdata);
         webdata.forEach( web_item_data => {
             const updated_todos = function(local_state, item_data) {
-                // set the created flag
-                item_data.created = created;
+                // set the forUpdate flag
+                item_data.forUpdate = forUpdate;
                 // find the element index
                 const response_index = local_state.findIndex(todo => todo.id === item_data.id);
                 if (response_index === -1) {
@@ -60,7 +60,7 @@ class TodoContainer extends Component {
                     }
             }
         ).then(response => {
-            // Update the local state with the received data after the POST action (and set them as just created)
+            // Update the local state with the received data after the POST action (and set them for update)
             this.apiJsonArrayHandler([response.data], true);
         }).catch(error =>
             console.log(error)
@@ -72,10 +72,10 @@ class TodoContainer extends Component {
         return (
             <div>
                 {this.state.todos.map((todo) => {
-                    if (todo.created) {
+                    if (todo.forUpdate) {
                         return (<TodoForm todo={todo} key={todo.id} apiJsonArrayHandler={this.apiJsonArrayHandler} />)
                     } else {
-                        return (<Todo todo={todo} key={todo.id}/>)
+                        return (<TodoItem todo={todo} key={todo.id} apiJsonArrayHandler={this.apiJsonArrayHandler} />)
                     }
                 })}
                 <button className="new" onClick={this.addToDo}>A new todo</button>

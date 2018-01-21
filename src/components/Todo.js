@@ -1,7 +1,7 @@
 import React from 'react'
 
 const Todo = ({todo}) =>
-    <div className="todo" key={todo.id}>
+    <div className="todo">
         <h4>{todo.owner}</h4>
         <p>{todo.content}</p>
         <p>{todo.valide ? 'Validé' : 'Invalidé'}</p>
