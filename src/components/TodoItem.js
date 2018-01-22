@@ -8,14 +8,19 @@ class TodoItem extends Component {
 
     // Custom functions
     onClick = () => {
-        this.props.apiJsonArrayHandler([this.props.todo], true)
+        // Update the local props with the element data after the click action (and set them as data is for update in the container)
+        this.props.apiJsonArrayHandler([this.props.todo], 'update')
+    };
+    onDelete = () => {
+        // Update the local props with the element data after the click action (and set them as data is for update in the container)
+        this.props.apiJsonArrayHandler([this.props.todo], 'delete')
     };
 
     // Draw
     render () {
         return(
             <span className="todo" key={this.props.id}>
-                <FontAwesome name='deleteIcon' className='fa-trash-o' />
+                <FontAwesome name='deleteIcon' className='fa-trash-o' onClick={this.onDelete}/>
                 <div onClick={this.onClick}>
                     <Todo todo={this.props.todo} />
                 </div>

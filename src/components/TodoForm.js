@@ -27,8 +27,8 @@ class TodoForm extends Component {
                 }
             }
         ).then(response => {
-            // Update the local state with the received data after the PUT action (and set them as updated)
-            this.props.apiJsonArrayHandler([response.data], false);
+            // Update the local state with the received data after the PUT action (and set them as data is for index)
+            this.props.apiJsonArrayHandler([response.data], 'index');
         }).catch(error => console.log(error))
     };
 
@@ -38,7 +38,7 @@ class TodoForm extends Component {
             <div className="todo">
                 <form onBlur={this.formOnBlur} >
                     <h4>{this.state.owner}</h4>
-                    <p><input className='input' type="text" name="content" value={this.state.content} placeholder="Your TODO" onChange={this.formOnChange}
+                    <p><input className='input' type="text" name="content" value={this.state.content || ''} placeholder="Your TODO" onChange={this.formOnChange}
                               autoFocus/></p>
                     <p className="date">{this.state.date_modification}</p>
                     <p className="date">{this.state.date_creation}</p>

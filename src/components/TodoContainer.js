@@ -26,42 +26,71 @@ class TodoContainer extends Component {
     };
 
     // Custom handlers
-    apiJsonArrayHandler = (webdata, forUpdate = false) => {
-        console.log(webdata);
-        webdata.forEach( web_item_data => {
-            const updated_todos = function(local_state, item_data) {
-                // set the forUpdate flag
-                item_data.forUpdate = forUpdate;
-                // find the element index
-                const response_index = local_state.findIndex(todo => todo.id === item_data.id);
-                if (response_index === -1) {
-                    // Unknown item (add)
-                    return update(local_state, {$push: [item_data]});
-                } else {
-                    // Known item (merge)
-                    return update(local_state, {
-                        [response_index]: {$merge: item_data}
-                    });
-                }
-            }(this.state.todos, web_item_data);
-            this.setState({todos: updated_todos});
-        });
-    }
+    apiJsonArrayHandler = (webdata, status = 'index') => {
+        switch (status) {
+            case 'delete':
+                webdata.forEach( web_item_data => {
+                    axios.delete(
+                        `http://localhost:4000/v1/to_do/${web_item_data.id}`
+                    ).then(response => {
+                        // informs the apiJso about the DELETE action result from the back-end
+                        switch (response.status) {
+                            case 204:
+                                // All fine, items is removed from local state
+                                const updated_todos = function(local_state, item_data) {
+                                    const response_index = local_state.findIndex(todo => todo.id === item_data.id);
+                                    if (response_index === -1) {
+                                        // Unknown item (add)
+                                        console.log('Unknown item was removed, nothing changed locally but this is unexpected behaviour!')
+                                    } else {
+                                        // Known item (delete)
+                                        return update(local_state, { $splice: [[response_index, 1]]});
+                                    }
+                                }(this.state.todos, web_item_data);
+                                this.setState({todos: updated_todos})
+                                break;
+                            default:
+                                // Something wrong
+                                console.log('Cannot delete this for some reason')
+                        }
+                    }).catch(error =>
+                        console.log(error)
+                    );
+                });
+                break;
+            default:
+                webdata.forEach( web_item_data => {
+                    const updated_todos = function(local_state, item_data) {
+                        // set the status flag
+                        item_data.status = status;
+                        // find the element index
+                        const response_index = local_state.findIndex(todo => todo.id === item_data.id);
+                        if (response_index === -1) {
+                            // Unknown item (add)
+                            return update(local_state, {$push: [item_data]});
+                        } else {
+                            // Known item (merge)
+                            return update(local_state, {
+                                [response_index]: {$merge: item_data}
+                            });
+                        }
+                    }(this.state.todos, web_item_data);
+                    this.setState({todos: updated_todos});
+                });
+        }
+    };
     // Post a new item and update the component state
     addToDo = () => {
         axios.post(
             'http://localhost:4000/v1/to_do',
             {
-                todo:
-                    {
-                        id: '',
-                        owner: this.state.owner,
-                        content: ''
-                    }
+                todo: {
+                    owner: this.state.owner
+                }
             }
         ).then(response => {
             // Update the local state with the received data after the POST action (and set them for update)
-            this.apiJsonArrayHandler([response.data], true);
+            this.apiJsonArrayHandler([response.data], 'update');
         }).catch(error =>
             console.log(error)
         );
@@ -72,10 +101,11 @@ class TodoContainer extends Component {
         return (
             <div>
                 {this.state.todos.map((todo) => {
-                    if (todo.forUpdate) {
-                        return (<TodoForm todo={todo} key={todo.id} apiJsonArrayHandler={this.apiJsonArrayHandler} />)
-                    } else {
-                        return (<TodoItem todo={todo} key={todo.id} apiJsonArrayHandler={this.apiJsonArrayHandler} />)
+                    switch (todo.status) {
+                        case 'update':
+                            return (<TodoForm todo={todo} key={todo.id} apiJsonArrayHandler={this.apiJsonArrayHandler} />);
+                        default:
+                            return (<TodoItem todo={todo} key={todo.id} apiJsonArrayHandler={this.apiJsonArrayHandler} />);
                     }
                 })}
                 <button className="new" onClick={this.addToDo}>A new todo</button>
