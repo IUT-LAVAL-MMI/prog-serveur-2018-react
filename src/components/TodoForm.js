@@ -38,7 +38,8 @@ class TodoForm extends Component {
             <div className="todo">
                 <form onBlur={this.formOnBlur} >
                     <h4>{this.state.owner}</h4>
-                    <p><input className='input' type="text" name="content" value={this.state.content} placeholder="Your TODO" onChange={this.formOnChange}/></p>
+                    <p><input className='input' type="text" name="content" value={this.state.content} placeholder="Your TODO" onChange={this.formOnChange}
+                              autoFocus/></p>
                     <p className="date">{this.state.date_modification}</p>
                     <p className="date">{this.state.date_creation}</p>
                 </form>
