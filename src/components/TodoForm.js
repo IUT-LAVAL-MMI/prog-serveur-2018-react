@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 
 class TodoForm extends Component {
     // Reacts
@@ -19,17 +18,7 @@ class TodoForm extends Component {
         this.setState({[event.target.name]: event.target.value});
     };
     formOnBlur = () => {
-        axios.put(
-            `http://localhost:4000/v1/to_do/${this.props.todo.id}`,{
-                todo: {
-                    owner: this.state.owner,
-                    content: this.state.content,
-                }
-            }
-        ).then(response => {
-            // Update the local state with the received data after the PUT action (and set them as data is for index)
-            this.props.apiJsonArrayHandler([response.data], 'index');
-        }).catch(error => console.log(error))
+        this.props.updateTodo(this.state)
     };
 
     // Draw
