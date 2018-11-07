@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "actioncable": "^5.1.4",
+    "actioncable": "^5.2.1",
     "axios": "^0.17.1",
     "font-awesome": "^4.7.0",
-    "immutability-helper": "^2.6.4",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
+    "immutability-helper": "^2.8.1",
+    "react": "^16.6.1",
+    "react-dom": "^16.6.1",
     "react-fontawesome": "^1.6.1",
     "react-scripts": "1.1.0"
   },
